@@ -14,9 +14,11 @@ whenever a new build is detected.
    then parses each app's per-branch `buildid` from its own block (anchored on
    the `AppID : <id>` header) under `depots → <depot> → branches → <branch>`.
    Batching all apps into one Steam connection is faster and more reliable than
-   one process per app. If any app is missing (e.g. a transient Steam
-   connection failure, `rc=254`), the whole batch is retried with backoff
-   (up to 5 attempts).
+   one process per app. Before each attempt the service clears the Steam client
+   state (`~/Steam`, `~/.steam`) to avoid corrupted-connection failures
+   (`rc=254`) caused by stale client state (bad IPv6 checks, stale connection
+   caches). If any app is still missing, the whole batch is retried with
+   backoff (up to 5 attempts).
 3. Compares the buildid against a persisted state file. On the first run it
    stores a baseline (no restart). When the buildid changes it updates the
    state and restarts the configured containers **one at a time** via the
@@ -32,7 +34,7 @@ whenever a new build is detected.
 
 | File                   | Purpose                                              |
 |------------------------|------------------------------------------------------|
-| `steam_server_watcher.py` | The monitoring application (Python 3.13, PyYAML)    |
+| `steam_server_watcher.py`| The monitoring application (Python 3.13, PyYAML)     |
 | `Dockerfile`           | Multi-stage build: `steamcmd/steamcmd` → `python:3.13-slim-trixie` |
 | `docker-compose.yml`   | Service definition (socket, config, state mounts)    |
 | `config.yaml`          | Annotated sample configuration                       |
@@ -40,6 +42,7 @@ whenever a new build is detected.
 ## Deployment
 
 ```bash
+# Assuming you've cloned this project to the current directory
 cd ./steam-server-watcher
 
 # 1) Edit config.yaml — replace the example App IDs / branches / container

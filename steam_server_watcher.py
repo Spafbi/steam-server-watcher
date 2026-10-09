@@ -223,6 +223,27 @@ def _split_app_blocks(output: str) -> dict:
     return blocks
 
 
+def _clear_steam_state(steamcmd_path: str) -> None:
+    """Clear the Steam client state to avoid corrupted-connection failures.
+
+    SteamCMD accumulates state in ``~/.steam`` and ``~/Steam`` (config.vdf,
+    connection caches, IPv6 check results, etc.). Over repeated runs this state
+    can become corrupted (e.g. ``ipv6check_http_state: "bad"``), causing
+    ``rc=254`` (Steam unreachable) even when the network is fine. Clearing the
+    state before each fetch forces a clean connection handshake.
+    """
+    import shutil
+    home = os.path.expanduser("~")
+    for subdir in ("Steam", ".steam"):
+        path = os.path.join(home, subdir)
+        if os.path.isdir(path):
+            try:
+                shutil.rmtree(path, ignore_errors=True)
+                LOG.debug("cleared Steam state: %s", path)
+            except Exception as exc:  # noqa: BLE001
+                LOG.debug("could not clear Steam state %s: %s", path, exc)
+
+
 def fetch_buildids(steamcmd_path: str, app_specs: list) -> dict:
     """Fetch buildids for many apps in a SINGLE steamcmd invocation.
 
@@ -243,6 +264,10 @@ def fetch_buildids(steamcmd_path: str, app_specs: list) -> dict:
 
     results: dict = {}
     for attempt in range(1, MAX_ATTEMPTS + 1):
+        # Clear Steam state before EVERY attempt to avoid corrupted-connection
+        # failures (rc=254) caused by stale client state (bad IPv6 checks,
+        # stale connection caches, etc.). This forces a clean handshake.
+        _clear_steam_state(steamcmd_path)
         LOG.debug("steamcmd attempt %d/%d: %s", attempt, MAX_ATTEMPTS, " ".join(cmd))
         try:
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=STEAMCMD_TIMEOUT)
