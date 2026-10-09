@@ -40,7 +40,7 @@ whenever a new build is detected.
 ## Deployment
 
 ```bash
-cd /home/snowc/steam-server-watcher
+cd ./steam-server-watcher
 
 # 1) Edit config.yaml — replace the example App IDs / branches / container
 #    names with your own.
