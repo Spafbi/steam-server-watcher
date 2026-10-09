@@ -1,0 +1,46 @@
+# steam-update-check configuration
+# --------------------------------
+# NOTE: Replace the App IDs below with the Steam App IDs of the dedicated
+# servers you actually run. The IDs shown are real dedicated-server apps
+# used only as examples.
+
+# Global default polling interval in seconds (checked every N seconds).
+poll_interval: 300
+
+# Path to the steamcmd binary inside the container.
+# Override only if you install steamcmd somewhere else.
+steamcmd_path: /usr/local/bin/steamcmd
+
+# Directory where the service persists its state (last-seen build IDs, etc.).
+# MUST match the `steam-state:/state` mount in docker-compose.yml.
+state_dir: /state
+
+# How long (seconds) to wait, after restarting a container, for its log to
+# emit `Success! App '<app_id>' fully installed.` before moving on to the
+# next container. On timeout the service logs a WARNING and continues.
+# Can be overridden per-app below.
+install_timeout: 300
+
+# List of Steam apps to watch.
+apps:
+  # 1) ICARUS Dedicated Server — default branch, restarts one container.
+  - app_id: 2089300
+    branch: public
+    containers:
+      - icarus-server
+
+  # 2) App on a non-default branch, restarting multiple containers.
+  #    (Example App ID — replace with your own.)
+  - app_id: 1245620
+    branch: experimental
+    containers:
+      - rustox-server
+      - rustox-proxy
+
+  # 3) Per-app poll_interval + install_timeout override + log-only mode
+  #    (no container restart). (Example App ID — replace with your own.)
+  - app_id: 230410
+    branch: public
+    poll_interval: 600   # override the global 300s for this app only
+    install_timeout: 600 # override the global 300s for this app only
+    containers: []       # empty list = log-only, no restart

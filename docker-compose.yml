@@ -1,0 +1,31 @@
+# steam-update-check
+# ------------------
+# Watches Steam dedicated-server apps for updates via steamcmd and
+# restarts the affected game-server containers when a new build lands.
+#
+# Mounts:
+#   ./config.yaml  -> /config/config.yaml (ro)  : user-defined app list & polling settings
+#   steam-state    -> /state                    : persistent state (last-seen build IDs, etc.)
+#   docker.sock    -> /var/run/docker.sock      : lets the container restart game-server containers
+services:
+  steam-update-check:
+    build: .
+    image: steam-update-check:latest
+    container_name: steam-update-check
+    restart: unless-stopped
+    volumes:
+      - ./config.yaml:/config/config.yaml:ro
+      - steam-state:/state
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SUC_CONFIG=/config/config.yaml
+      - SUC_STATE_DIR=/state
+      - TZ=${TZ:-UTC}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  steam-state:

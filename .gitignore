@@ -1,0 +1,77 @@
+# ---- Python: bytecode & compiled artifacts ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ---- Python: packaging & build output ----
+*.egg-info/
+*.egg
+build/
+dist/
+wheels/
+pip-wheel-metadata/
+sdist/
+share/python-wheels/
+
+# ---- Python: virtual environments ----
+venv/
+.venv/
+env/
+ENV/
+.conda/
+
+# ---- Python: test / lint / type-check caches ----
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.pytype/
+.tox/
+.nox/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+*.py,cover
+
+# ---- Docker: local data & build artifacts ----
+# (Dockerfile and docker-compose.yml SHOULD be tracked)
+.docker/
+docker-data/
+volumes/
+
+# ---- Environment & secrets ----
+# NOTE: config.yaml is intentionally tracked.  If it ever contains
+# secrets, commit a config.example.yaml instead and add `config.yaml` here.
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# ---- Logs & temporary files ----
+*.log
+logs/
+tmp/
+*.tmp
+
+# ---- OS-specific noise ----
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ---- Editor / IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ---- Misc ----
+*.bak
+*.orig
