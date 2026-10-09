@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Multi-stage Dockerfile for steam-update-check
+# Multi-stage Dockerfile for steam-server-watcher
 #
 # Rationale:
 #   Stage 1 (steamcmd/steamcmd) already ships a fully working SteamCMD install
@@ -100,7 +100,7 @@ RUN set -eux; \
 
 # --- Application ------------------------------------------------------------
 WORKDIR /app
-COPY steam_update_check.py /app/steam_update_check.py
+COPY steam_server_watcher.py /app/steam_server_watcher.py
 
 # --- Environment ------------------------------------------------------------
 ENV SUC_CONFIG=/config/config.yaml \
@@ -124,7 +124,7 @@ VOLUME ["/state", "/config"]
 # Runs a single check pass against the configured config. Safe to remove if
 # you prefer to drive liveness/readiness from an orchestrator instead.
 HEALTHCHECK --interval=30s --timeout=25s --start-period=60s --retries=3 \
-    CMD python /app/steam_update_check.py --once --config /config/config.yaml
+    CMD python /app/steam_server_watcher.py --once --config /config/config.yaml
 
-ENTRYPOINT ["python", "/app/steam_update_check.py"]
+ENTRYPOINT ["python", "/app/steam_server_watcher.py"]
 CMD ["--verbose"]

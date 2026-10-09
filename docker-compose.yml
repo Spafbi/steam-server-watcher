@@ -1,5 +1,5 @@
-# steam-update-check
-# ------------------
+# steam-server-watcher
+# --------------------
 # Watches Steam dedicated-server apps for updates via steamcmd and
 # restarts the affected game-server containers when a new build lands.
 #
@@ -8,10 +8,10 @@
 #   steam-state    -> /state                    : persistent state (last-seen build IDs, etc.)
 #   docker.sock    -> /var/run/docker.sock      : lets the container restart game-server containers
 services:
-  steam-update-check:
+  steam-server-watcher:
     build: .
-    image: steam-update-check:latest
-    container_name: steam-update-check
+    image: steam-server-watcher:latest
+    container_name: steam-server-watcher
     restart: unless-stopped
     volumes:
       - ./config.yaml:/config/config.yaml:ro

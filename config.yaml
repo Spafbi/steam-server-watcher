@@ -1,5 +1,5 @@
-# steam-update-check configuration
-# --------------------------------
+# steam-server-watcher configuration
+# ----------------------------------
 # NOTE: Replace the App IDs below with the Steam App IDs of the dedicated
 # servers you actually run. The IDs shown are real dedicated-server apps
 # used only as examples.

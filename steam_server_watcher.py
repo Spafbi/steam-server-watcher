@@ -26,7 +26,7 @@ except ImportError:  # pragma: no cover
     print("ERROR: PyYAML is required. Install with: pip install PyYAML", file=sys.stderr)
     sys.exit(2)
 
-LOG = logging.getLogger("steam-update-check")
+LOG = logging.getLogger("steam-server-watcher")
 
 DEFAULT_CONFIG_PATH = "/config/config.yaml"
 STEAMCMD_TIMEOUT = 180

@@ -1,4 +1,4 @@
-# steam-update-check
+# steam-server-watcher
 
 A containerized service that watches a list of Steam dedicated-server App IDs
 for build updates (via SteamCMD) and restarts the associated Docker containers
@@ -32,7 +32,7 @@ whenever a new build is detected.
 
 | File                   | Purpose                                              |
 |------------------------|------------------------------------------------------|
-| `steam_update_check.py`| The monitoring application (Python 3.13, PyYAML)     |
+| `steam_server_watcher.py` | The monitoring application (Python 3.13, PyYAML)    |
 | `Dockerfile`           | Multi-stage build: `steamcmd/steamcmd` → `python:3.13-slim-trixie` |
 | `docker-compose.yml`   | Service definition (socket, config, state mounts)    |
 | `config.yaml`          | Annotated sample configuration                       |
@@ -40,20 +40,20 @@ whenever a new build is detected.
 ## Deployment
 
 ```bash
-cd /home/snowc/steam-update-check
+cd /home/snowc/steam-server-watcher
 
 # 1) Edit config.yaml — replace the example App IDs / branches / container
 #    names with your own.
 $EDITOR config.yaml
 
 # 2) Build the image.
-docker build -t steam-update-check:latest .
+docker build -t steam-server-watcher:latest .
 
 # 3) Start the stack.
 docker compose up -d
 
 # 4) Watch the logs.
-docker compose logs -f steam-update-check
+docker compose logs -f steam-server-watcher
 ```
 
 ## Verification
@@ -65,12 +65,12 @@ docker compose ps
 # Run a single check cycle manually (does not loop) and watch it fetch buildids.
 docker run --rm \
   -v "$PWD/config.yaml:/config/config.yaml:ro" \
-  -v steam-update-check_steam-state:/state \
-  steam-update-check:latest --once --verbose
+  -v steam-server-watcher_steam-state:/state \
+  steam-server-watcher:latest --once --verbose
 
 # Inspect the persisted state (one file per app/branch).
-docker run --rm -v steam-update-check_steam-state:/state \
-  steam-update-check:latest sh -c 'ls -la /state; cat /state/*.buildid'
+docker run --rm -v steam-server-watcher_steam-state:/state \
+  steam-server-watcher:latest sh -c 'ls -la /state; cat /state/*.buildid'
 ```
 
 On first run each app logs `first run, baseline stored: ...` and writes a
