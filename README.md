@@ -45,14 +45,14 @@ whenever a new build is detected.
 # Assuming you've cloned this project to the current directory
 cd ./steam-server-watcher
 
-# 1) Edit config.yaml — replace the example App IDs / branches / container
+# 1) One-time setup (detects the docker group GID, writes .env)
+./setup.sh
+
+# 2) Edit config.yaml — replace the example App IDs / branches / container
 #    names with your own.
 $EDITOR config.yaml
 
-# 2) Build the image.
-docker build -t steam-server-watcher:latest .
-
-# 3) Start the stack.
+# 3) Build & start the stack.
 docker compose up -d
 
 # 4) Watch the logs.

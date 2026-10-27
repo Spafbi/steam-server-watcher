@@ -46,6 +46,7 @@ volumes/
 # secrets, commit a config.example.yaml instead and add `config.yaml` here.
 .env
 .env.*
+!.env.example
 *.pem
 *.key
 *.crt
