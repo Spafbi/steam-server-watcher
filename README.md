@@ -36,7 +36,9 @@ whenever a new build is detected.
 |------------------------|------------------------------------------------------|
 | `steam_server_watcher.py`| The monitoring application (Python 3.13, PyYAML)     |
 | `Dockerfile`           | Multi-stage build: `steamcmd/steamcmd` → `python:3.13-slim-trixie` |
-| `docker-compose.yml`   | Service definition (socket, config, state mounts)    |
+| `docker-compose.yml`   | Service definition (socket, config, state mounts, group) |
+| `setup.sh`             | One-time setup: detects docker group GID, writes `.env` |
+| `.env.example`         | Reference for the required environment variables       |
 | `config.yaml`          | Annotated sample configuration                       |
 
 ## Deployment
@@ -66,9 +68,12 @@ docker compose logs -f steam-server-watcher
 docker compose ps
 
 # Run a single check cycle manually (does not loop) and watch it fetch buildids.
+# (Include the socket + group-add if you want container restarts to work here too.)
 docker run --rm \
   -v "$PWD/config.yaml:/config/config.yaml:ro" \
   -v steam-server-watcher_steam-state:/state \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --group-add "$(getent group docker | cut -d: -f3)" \
   steam-server-watcher:latest --once --verbose
 
 # Inspect the persisted state (one file per app/branch).
@@ -107,5 +112,10 @@ See `config.yaml` for a fully annotated example. Key fields:
 - The Docker socket is mounted read-write so the service can issue
   `docker restart`. This grants the container control over the host daemon —
   only deploy on hosts you trust.
+- The `steam` user needs membership in the host's `docker` group to access
+  the socket. `setup.sh` detects the GID and writes it to `.env`;
+  `docker-compose.yml` applies it via `group_add`. If you deploy without
+  `setup.sh`, set `DOCKER_GID` in your `.env` manually
+  (`getent group docker` shows it).
 - SteamCMD is a 32-bit binary; the image carries the required i386 runtime
   libraries and exposes the 32-bit dynamic loader at `/lib/ld-linux.so.2`.
