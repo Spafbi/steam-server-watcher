@@ -114,7 +114,10 @@ ENV SUC_CONFIG=/config/config.yaml \
 RUN set -eux; \
     useradd --uid 1000 --create-home --shell /usr/sbin/nologin steam; \
     mkdir -p /state /config; \
-    chown -R steam:steam /app /state /config /home/steam
+    # /opt/steamcmd must be owned by steam: the SteamCMD bootstrap updater
+    # self-updates the install tree in place (package cache, bins). If it
+    # cannot write there, every run dies with rc=254 ("Steam unreachable").
+    chown -R steam:steam /app /state /config /home/steam /opt/steamcmd
 
 USER steam
 
