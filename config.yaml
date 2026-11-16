@@ -34,7 +34,8 @@ apps:
   - app_id: 443030
     branch: conan-exiles-legacy
     containers:
-      - conan-exiles
+      - conan-exiles-pve
+      - conan-exiles-pvp
 
   # 3) Per-app poll_interval + install_timeout override + log-only mode
   #    (no container restart). (Example App ID — replace with your own.)
