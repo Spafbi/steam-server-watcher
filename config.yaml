@@ -32,9 +32,9 @@ apps:
   # 2) App on a non-default branch, restarting multiple containers.
   #    (Example App ID — replace with your own.)
   - app_id: 443030
-    branch: public
+    branch: conan-exiles-legacy
     containers:
-      - conan-exiles-enhanced
+      - conan-exiles
 
   # 3) Per-app poll_interval + install_timeout override + log-only mode
   #    (no container restart). (Example App ID — replace with your own.)
