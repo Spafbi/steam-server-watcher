@@ -18,7 +18,7 @@ services:
       - steam-state:/state
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
-      - ${DOCKER_GID:?Run ./setup.sh first — it writes the docker group GID to .env}
+      - ${DOCKER_GID:?DOCKER_GID not set — run ./setup.sh (or create .env from .env.example) first}
     environment:
       - SUC_CONFIG=/config/config.yaml
       - SUC_STATE_DIR=/state
