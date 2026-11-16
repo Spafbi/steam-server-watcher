@@ -38,6 +38,8 @@ whenever a new build is detected.
 | `Dockerfile`           | Multi-stage build: `steamcmd/steamcmd` → `python:3.13-slim-trixie` |
 | `docker-compose.yml`   | Service definition (socket, config, state mounts)    |
 | `config.yaml`          | Annotated sample configuration                       |
+| `setup.sh`             | One-time setup: detects the host's `docker` group GID and writes it to `.env` |
+| `.env.example`         | Template for `.env` (holds `DOCKER_GID`, used by `docker-compose.yml`) |
 
 ## Deployment
 
@@ -45,17 +47,22 @@ whenever a new build is detected.
 # Assuming you've cloned this project to the current directory
 cd ./steam-server-watcher
 
-# 1) Edit config.yaml — replace the example App IDs / branches / container
+# 1) Run the one-time setup: it detects the host's `docker` group GID and
+#    writes it to .env (docker-compose.yml uses DOCKER_GID to grant the
+#    container permission on the mounted docker socket).
+./setup.sh
+
+# 2) Edit config.yaml — replace the example App IDs / branches / container
 #    names with your own.
 $EDITOR config.yaml
 
-# 2) Build the image.
+# 3) Build the image.
 docker build -t steam-server-watcher:latest .
 
-# 3) Start the stack.
+# 4) Start the stack.
 docker compose up -d
 
-# 4) Watch the logs.
+# 5) Watch the logs.
 docker compose logs -f steam-server-watcher
 ```
 
@@ -107,6 +114,9 @@ See `config.yaml` for a fully annotated example. Key fields:
 - The Docker socket is mounted read-write so the service can issue
   `docker restart`. This grants the container control over the host daemon —
   only deploy on hosts you trust.
+- The container's `group_add` uses `DOCKER_GID` from `.env` (written by
+  `./setup.sh`). It must match the host's `docker` group GID, otherwise the
+  in-container `docker` CLI cannot talk to the socket.
 - SteamCMD is a 32-bit binary; the image carries the required i386 runtime
   libraries and exposes the 32-bit dynamic loader at `/lib/ld-linux.so.2`.
 - `/opt/steamcmd` is owned by the `steam` user. This is required: the SteamCMD

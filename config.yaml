@@ -1,11 +1,11 @@
-# steam-server-watcher configuration
-# ----------------------------------
+# steam-update-check configuration
+# --------------------------------
 # NOTE: Replace the App IDs below with the Steam App IDs of the dedicated
 # servers you actually run. The IDs shown are real dedicated-server apps
 # used only as examples.
 
 # Global default polling interval in seconds (checked every N seconds).
-poll_interval: 300
+poll_interval: 900
 
 # Path to the steamcmd binary inside the container.
 # Override only if you install steamcmd somewhere else.
@@ -31,16 +31,17 @@ apps:
 
   # 2) App on a non-default branch, restarting multiple containers.
   #    (Example App ID — replace with your own.)
-  - app_id: 1245620
-    branch: experimental
+  - app_id: 443030
+    branch: public
     containers:
-      - rustox-server
-      - rustox-proxy
+      - conan-exiles-enhanced
 
   # 3) Per-app poll_interval + install_timeout override + log-only mode
   #    (no container restart). (Example App ID — replace with your own.)
-  - app_id: 230410
+  - app_id: 3792580 
     branch: public
+    containers:
+      - scum
     poll_interval: 600   # override the global 300s for this app only
     install_timeout: 600 # override the global 300s for this app only
     containers: []       # empty list = log-only, no restart
